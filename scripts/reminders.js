@@ -53,14 +53,26 @@ module.exports = function(robot) {
     _.each(events, function(events, user_id) {
       console.log("checking events for " + user_id);
       var to_remind = _.filter(events, function(event) {
+        console.log("to_remind. event " + event);
         var myStatus = _.find(event.attendees, function(a) { return a.self });
-        if(myStatus && myStatus === "declined") return;
+        console.log("myStatus: " + myStatus);
+        if(myStatus && myStatus === "declined") {
+          console.log("no reminder since my status is 'declined'");
+          return;
+        }
+        console.log("event.reminders.useDefault: "+event.reminders.useDefault);
+        console.log("user_default_reminders[user_id]: "+user_default_reminders[user_id]);
+        console.log("event.reminders.overrides " + event.reminders.overrides);
         var reminders = event.reminders.useDefault ? user_default_reminders[user_id] : event.reminders.overrides;
+        console.log("reminders : "+reminders);
         if(!reminders) return; // no reminders
         var reminder = _.find(reminders, function(r) { return r.method === 'popup'; });
+        console.log("reminder :" + reminder);
         if(!reminder) return; // no popup reminder
         var start_date = new Date(event.start.dateTime);
+        console.log("start_date :"+start_date);
         var difference = start_date - new Date();
+        console.log("difference :"+difference);
         return difference > 0 && difference <= (60000*reminder.minutes) && difference > (60000*(reminder.minutes-1));
       });
       _.each(to_remind, function(event) {
@@ -221,7 +233,7 @@ module.exports = function(robot) {
       });
     });
   }
-  
+
   function disable_calendar_reminders(user) {
     user.calendar_notify_events = false;
     user.calendar_watch_token = null;
@@ -264,7 +276,7 @@ module.exports = function(robot) {
     robot.emit('google:authenticate', msg, function(err, oauth) {
       setup_calendar_watch(msg.message.user, function(err, res) {
         if(err) {
-          msg.reply("Error");
+          msg.reply("erh.. I'm stuck! please check the logs and help me fix this error.");
           return console.log(err);
         }
         msg.message.user.calendar_notify_events = true;
