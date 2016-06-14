@@ -42,7 +42,7 @@ module.exports = function(robot) {
       if(user.calendar_notify_events) {
         setup_watch_renewal(user);
         user.last_event_update = undefined;
-        console.log("getEvents for user :"+)
+        console.log("getEvents for user")
         getEvents(user);
       }
     });
@@ -55,7 +55,7 @@ module.exports = function(robot) {
       console.log("checking events for " + user_id);
       var to_remind = _.filter(events, function(event) {
         console.log("-------------------------------------------------");
-        console.log("to_remind. event " + event);
+        console.log("to_remind. event " + JSON.stringify(event));
         var myStatus = _.find(event.attendees, function(a) { return a.self });
         console.log("myStatus: " + myStatus);
         if(myStatus && myStatus === "declined") {
