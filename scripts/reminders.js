@@ -36,12 +36,13 @@ module.exports = function(robot) {
     _.each(robot.brain.users(), function(user) {
       var slack_user = robot.adapter.client.getUserByName(user.name);
       if(slack_user && slack_user.deleted) {
-        console.log(slack_user.name + " is deleted");
         return disable_calendar_reminders(user);
       }
+      console.log("watching this user  :"+JSON.stringify(user));
       if(user.calendar_notify_events) {
         setup_watch_renewal(user);
         user.last_event_update = undefined;
+        console.log("getEvents for user :"+)
         getEvents(user);
       }
     });
@@ -53,6 +54,7 @@ module.exports = function(robot) {
     _.each(events, function(events, user_id) {
       console.log("checking events for " + user_id);
       var to_remind = _.filter(events, function(event) {
+        console.log("-------------------------------------------------");
         console.log("to_remind. event " + event);
         var myStatus = _.find(event.attendees, function(a) { return a.self });
         console.log("myStatus: " + myStatus);
